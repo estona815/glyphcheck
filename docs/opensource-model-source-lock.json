@@ -1,0 +1,31 @@
+{
+  "schema": "glyphcheck.models/v1",
+  "retrieved_at": "2026-10-09T12:27:18.489286+00:00",
+  "upstream": "tesseract-ocr/tessdata_fast",
+  "commit": "87416418657359cb625c412a48b6e1d6d41c29bd",
+  "license": "Apache-2.0",
+  "expected_model_bytes": 5790503,
+  "incremental_peak_bytes_reserved_in_plan": 67108864,
+  "new_billed_services": 0,
+  "models_trained_by_this_project": false,
+  "models": [
+    {
+      "path": "_runtime/tessdata/eng.traineddata",
+      "source": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd/eng.traineddata",
+      "bytes": 4113088,
+      "sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2"
+    },
+    {
+      "path": "_runtime/tessdata/kor.traineddata",
+      "source": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd/kor.traineddata",
+      "bytes": 1677415,
+      "sha256": "6b85e11d9bbf07863b97b3523b1b112844c43e713df8b66418a081fd1060b3b2"
+    },
+    {
+      "path": "_runtime/tessdata/LICENSE",
+      "source": "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/87416418657359cb625c412a48b6e1d6d41c29bd/LICENSE",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    }
+  ]
+}

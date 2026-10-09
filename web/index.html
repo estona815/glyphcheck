@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>GlyphCheck · 줄대조</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <span class="wordmark">GlyphCheck</span>
+      <h1>줄대조</h1>
+      <p>이미지의 글자를 원본과 대조하고 고칩니다.</p>
+    </div>
+    <div class="file-actions">
+      <input id="image-input" class="visually-hidden" type="file" accept="image/png,image/jpeg" aria-label="대조할 PNG 또는 JPEG 이미지 선택">
+      <button id="open-image" class="button primary" type="button">이미지 열기</button>
+      <button id="run-demo" class="button" type="button">예제 실행</button>
+    </div>
+  </header>
+
+  <main id="workspace" class="workspace" aria-busy="false">
+    <div class="processing-note">
+      <span class="local-label"><span class="local-dot" aria-hidden="true"></span>이 컴퓨터에서 처리</span>
+      <p>PNG·JPEG, 최대 10 MiB · 이 컴퓨터의 로컬 OCR을 사용합니다.</p>
+    </div>
+    <div id="status" class="status" role="status" aria-live="polite">이미지를 열거나 합성 예제를 실행하세요.</div>
+    <p id="error" class="error" role="alert" hidden></p>
+
+    <div class="review-layout">
+      <section class="image-panel" aria-labelledby="image-heading">
+        <div class="section-heading">
+          <h2 id="image-heading">원본 이미지</h2>
+          <span id="image-meta" class="meta"></span>
+        </div>
+        <div id="image-viewport" class="image-viewport" tabindex="0" aria-label="원본 이미지. 선택한 줄의 근사 영역을 표시합니다.">
+          <p id="image-empty" class="image-empty">아직 열린 이미지가 없습니다.</p>
+          <div id="image-wrap" class="image-wrap" hidden>
+            <img id="source-image" alt="대조할 원본 이미지">
+            <div id="region-guide" class="region-guide" aria-hidden="true" hidden></div>
+          </div>
+        </div>
+        <p class="image-caption">줄의 ‘원본에서 보기’를 누르면 근사 영역이 표시됩니다. 여백을 포함한 안내이며 정확한 글자 경계가 아닙니다.</p>
+        <p id="source-name" class="source-name"></p>
+      </section>
+
+      <section class="lines-panel" aria-labelledby="lines-heading">
+        <div class="section-heading">
+          <h2 id="lines-heading">인식된 줄</h2>
+          <span id="review-count" class="meta">0줄</span>
+        </div>
+        <p class="confidence-note">확신도는 줄 단위이며 정확성을 보장하지 않습니다.</p>
+        <div class="filter-controls">
+          <label class="check-control"><input id="needs-review-only" type="checkbox">검토 필요만 보기</label>
+          <label class="check-control"><input id="low-confidence-only" type="checkbox">낮은 확신도만 보기</label>
+          <div class="threshold-control">
+            <label for="threshold">낮은 확신도 기준</label>
+            <input id="threshold" type="range" min="0" max="100" step="1" value="85" aria-describedby="threshold-help">
+            <output id="threshold-value" for="threshold">85% 미만</output>
+          </div>
+          <p id="threshold-help" class="control-help">기준은 확인 우선순위용입니다. 교정문의 확신도를 뜻하지 않습니다.</p>
+        </div>
+        <p id="lines-empty" class="lines-empty">실제 인식 결과가 이곳에 표시됩니다.</p>
+        <p id="no-text" class="lines-empty" hidden>이미지에서 인식된 글자가 없습니다. 더 선명한 인쇄문자 이미지를 선택해 보세요.</p>
+        <p id="filter-empty" class="lines-empty" hidden>현재 필터에 맞는 줄이 없습니다.</p>
+        <ol id="line-list" class="line-list" aria-label="OCR 엔진이 반환한 순서의 줄"></ol>
+        <p id="engine-meta" class="engine-meta"></p>
+      </section>
+    </div>
+
+    <section class="export-row" aria-label="교정 결과 내보내기">
+      <div>
+        <p id="export-summary">이미지를 인식한 뒤 교정 결과를 저장할 수 있습니다.</p>
+        <p class="export-help">필터와 관계없이 모든 줄을 OCR 엔진이 반환한 순서로 저장합니다. 미검토 여부는 JSON 기록에 남습니다.</p>
+      </div>
+      <div class="export-actions">
+        <button id="export-text" class="button primary" type="button" disabled>텍스트 내보내기</button>
+        <button id="export-record" class="button" type="button" disabled>검토 기록 내보내기</button>
+      </div>
+    </section>
+  </main>
+  <footer class="app-footer">
+    이미지는 같은 컴퓨터의 로컬 서비스로만 보냅니다. 원본 파일을 수정하지 않습니다.
+    <span>인쇄문자 교정용 도구 · 자동 판단이나 정확성 인증이 아닙니다.</span>
+  </footer>
+</body>
+</html>

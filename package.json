@@ -1,0 +1,12 @@
+{
+  "name": "glyphcheck-local-proofreading",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local printed-text OCR proofreading with source-image review and explicit corrections",
+  "license": "MIT",
+  "engines": { "node": ">=22" },
+  "dependencies": {
+    "tesseract.js": "7.0.0",
+    "sharp": "0.35.4"
+  }
+}

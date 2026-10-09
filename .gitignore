@@ -1,0 +1,9 @@
+_runtime/
+node_modules/
+__pycache__/
+*.pyc
+tests/*evidence*.json
+docs/*-notes.md
+docs/design-and-scope.md
+src/vision_ocr.swift
+src/make_demo.swift

@@ -395,11 +395,20 @@ el["image-input"].addEventListener("change", () => {
 });
 el["run-demo"].addEventListener("click", () => runTask(async () => {
   message("합성 예제를 로컬 서버에서 불러오고 있습니다…");
-  const response = await fetch("/demo.png", {
-    mode: "same-origin", credentials: "omit", redirect: "error", cache: "no-store"
-  });
-  if (!response.ok) throw new Error(await responseError(response));
-  await recognize(await response.blob(), "demo.png", "synthetic_demo");
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 120000);
+  let blob;
+  try {
+    const response = await fetch("/demo.png", {
+      mode: "same-origin", credentials: "omit", redirect: "error", cache: "no-store",
+      signal: controller.signal
+    });
+    if (!response.ok) throw new Error(await responseError(response));
+    blob = await response.blob();
+  } finally {
+    clearTimeout(timer);
+  }
+  await recognize(blob, "demo.png", "synthetic_demo");
 }));
 for (const id of ["needs-review-only", "low-confidence-only"]) {
   el[id].addEventListener("change", () => { if (!state.busy) renderLines(); });

@@ -133,7 +133,7 @@ function makeHarness() {
       revokeObjectURL: value => harness.revoked.push(value)
     },
     fetch: async (url, options) => {
-      assert.equal(url, "/api/recognize", "Synthetic harness permits one local route only");
+      assert.ok(["/api/recognize", "/demo.png"].includes(url), "Synthetic harness permits only local OCR/demo routes");
       harness.fetchCalls.push({ url, options });
       return harness.fetchHandler(url, options);
     },
@@ -327,6 +327,53 @@ test("successful empty OCR replaces old guide with no-text state and disables ex
   assert.equal(h.api.state.source.name, "synthetic-empty.png");
   assert.ok(h.revoked.includes(previousUrl), "Old preview released only after successful commit");
   assert.equal(h.api.state.busy, false);
+});
+
+for (const stalledPhase of ["headers", "image-body", "error-body"]) {
+  test("stalled demo " + stalledPhase + " is aborted without losing previous corrections", async () => {
+    const h = await seededHarness(); const before = preservedSnapshot(h); let signal;
+    const stalled = () => new Promise((_, reject) => {
+      signal?.addEventListener("abort", () => {
+        const error = new Error("SYNTHETIC DEMO ABORT"); error.name = "AbortError"; reject(error);
+      }, { once: true });
+    });
+    h.fetchHandler = async (url, options) => {
+      assert.equal(url, "/demo.png"); signal = options.signal;
+      if (stalledPhase === "headers") return stalled();
+      if (stalledPhase === "image-body") return { ok: true, status: 200, blob: stalled };
+      return { ok: false, status: 503, text: stalled };
+    };
+    h.api.el["run-demo"].click(); await tick();
+    assert.equal(h.api.state.busy, true);
+    assert.equal(h.timers.size, 1, "Demo fetch and body must remain under a deadline");
+    assert.equal([...h.timers.values()][0].delay, 120000);
+    assert.ok(signal, "Demo request carries its own AbortSignal");
+    h.fire([...h.timers.keys()][0]); await tick();
+    assert.equal(signal.aborted, true);
+    assertPreserved(h, before); assert.equal(h.timers.size, 0);
+    assert.equal(h.api.el["run-demo"].disabled, false);
+    assert.equal(h.api.el["open-image"].disabled, false);
+    assert.match(h.api.el.error.textContent, /120초/);
+    assert.equal(h.fetchCalls.filter(x => x.url === "/api/recognize").length, 1,
+      "Stalled demo never starts a new OCR request");
+  });
+}
+test("successful demo clears download timer before independent OCR request", async () => {
+  const h = await seededHarness(); let demoSignal, ocrSignal;
+  h.fetchHandler = async (url, options) => {
+    if (url === "/demo.png") {
+      demoSignal = options.signal;
+      return { ok: true, status: 200, blob: async () => h.blob() };
+    }
+    ocrSignal = options.signal;
+    assert.equal(h.timers.size, 1, "Only OCR timer remains after complete demo download");
+    return { ok: true, status: 200, json: async () => syntheticReply() };
+  };
+  h.api.el["run-demo"].click(); await tick();
+  assert.ok(demoSignal); assert.ok(ocrSignal); assert.notEqual(demoSignal, ocrSignal);
+  assert.equal(demoSignal.aborted, false); assert.equal(ocrSignal.aborted, false);
+  assert.equal(h.timers.size, 0); assert.equal(h.api.state.busy, false);
+  assert.equal(h.api.state.source.name, "demo.png");
 });
 
 (async () => {

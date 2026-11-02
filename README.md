@@ -1,5 +1,18 @@
 # GlyphCheck · 줄대조
 
+## 원본 이미지와 수정 내용을 연결하는 OCR 검수 도구
+
+한·영 OCR 결과를 원본 영역과 함께 보고 수정하는 로컬 시제품입니다. **편집하면 검토 완료 상태를 해제하고, 새 OCR 요청이 실패해도 이전 교정 내용을 보존**합니다.
+
+- **결과 추적:** JSON에 원문·수정문·원본 hash·검토 여부를 남깁니다. 미검토 행은 안내와 상태를 유지한 채 내보낼 수 있습니다.
+- **기술:** Python 로컬 서버 · JavaScript · Tesseract.js 7 기반 한·영 OCR.
+- **제작:** 권준 개인 프로젝트. 설계·구현·테스트·문서에 Codex 활용.
+- **최근 확인:** 2026-11-03 기존 프런트 논리 회귀 **13/13 통과**. Node VM·최소 DOM·모의 응답 기반이며 실제 OCR 정확도·브라우저 E2E와 구분합니다.
+
+[프로젝트 사례](https://github.com/estona815/engineering-portfolio/blob/main/case-studies/glyphcheck.md) · [검증 범위와 로그](https://github.com/estona815/engineering-portfolio/blob/main/docs/VALIDATION.md) · [포트폴리오](https://github.com/estona815/engineering-portfolio)
+
+## English overview
+
 A local tool for proofreading OCR against the original printed-text image.
 Open a Korean/English PNG or JPEG, run actual OCR, compare each recognized line
 with its approximate source region, correct the text, mark it reviewed and
